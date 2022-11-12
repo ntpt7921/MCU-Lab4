@@ -10,7 +10,9 @@
 
 #include "main.h"
 
-// this function return true if the first arg is <= the second arg
+// it is implied that if this function perform the operation
+// arg1 < arg2 (sematically speaking), then the resulting queue
+// will be a max-queue
 typedef uint8_t (*Compare_function_t)(void*, void*);
 
 /*

@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-
+#include "Custom/priority_queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,18 +41,26 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-
+#define QUEUE_MAX_SIZE 10
+uint32_t priority_queue[QUEUE_MAX_SIZE];
+uint8_t elem_count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-
+uint8_t compare_max_queue(void*, void*);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-
+uint8_t compare_max_queue(void *e1, void *e2)
+{
+    if (*(uint32_t*) e1 < *(uint32_t*) e2)
+        return 1;
+    else
+        return 0;
+}
 /* USER CODE END 0 */
 
 /**
@@ -61,40 +69,50 @@ void SystemClock_Config(void);
  */
 int main(void)
 {
-	/* USER CODE BEGIN 1 */
+    /* USER CODE BEGIN 1 */
 
-	/* USER CODE END 1 */
+    /* USER CODE END 1 */
 
-	/* MCU Configuration--------------------------------------------------------*/
+    /* MCU Configuration--------------------------------------------------------*/
 
-	/* Reset of all peripherals, Initializes the Flash interface and the Systick. */
-	HAL_Init();
+    /* Reset of all peripherals, Initializes the Flash interface and the Systick. */
+    HAL_Init();
 
-	/* USER CODE BEGIN Init */
+    /* USER CODE BEGIN Init */
 
-	/* USER CODE END Init */
+    /* USER CODE END Init */
 
-	/* Configure the system clock */
-	SystemClock_Config();
+    /* Configure the system clock */
+    SystemClock_Config();
 
-	/* USER CODE BEGIN SysInit */
+    /* USER CODE BEGIN SysInit */
 
-	/* USER CODE END SysInit */
+    /* USER CODE END SysInit */
 
-	/* Initialize all configured peripherals */
-	/* USER CODE BEGIN 2 */
+    /* Initialize all configured peripherals */
+    /* USER CODE BEGIN 2 */
+    for (uint8_t i = 0; i < QUEUE_MAX_SIZE; i++)
+        priority_queue[i] = i;
 
-	/* USER CODE END 2 */
+    Custom_PQueue_Create(priority_queue, QUEUE_MAX_SIZE, sizeof(uint32_t), 10,
+            compare_max_queue);
 
-	/* Infinite loop */
-	/* USER CODE BEGIN WHILE */
-	while (1)
-	{
-		/* USER CODE END WHILE */
+    for (uint8_t i = 0; i < QUEUE_MAX_SIZE; i++)
+    {
+        Custom_PQueue_Pop(priority_queue, QUEUE_MAX_SIZE, sizeof(uint32_t),
+        QUEUE_MAX_SIZE - i, compare_max_queue);
+    }
+    /* USER CODE END 2 */
 
-		/* USER CODE BEGIN 3 */
-	}
-	/* USER CODE END 3 */
+    /* Infinite loop */
+    /* USER CODE BEGIN WHILE */
+    while (1)
+    {
+        /* USER CODE END WHILE */
+
+        /* USER CODE BEGIN 3 */
+    }
+    /* USER CODE END 3 */
 }
 
 /**
@@ -103,36 +121,36 @@ int main(void)
  */
 void SystemClock_Config(void)
 {
-	RCC_OscInitTypeDef RCC_OscInitStruct =
-	{ 0 };
-	RCC_ClkInitTypeDef RCC_ClkInitStruct =
-	{ 0 };
+    RCC_OscInitTypeDef RCC_OscInitStruct =
+    { 0 };
+    RCC_ClkInitTypeDef RCC_ClkInitStruct =
+    { 0 };
 
-	/** Initializes the RCC Oscillators according to the specified parameters
-	 * in the RCC_OscInitTypeDef structure.
-	 */
-	RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
-	RCC_OscInitStruct.HSIState = RCC_HSI_ON;
-	RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
-	RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
-	if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
-	{
-		Error_Handler();
-	}
+    /** Initializes the RCC Oscillators according to the specified parameters
+     * in the RCC_OscInitTypeDef structure.
+     */
+    RCC_OscInitStruct.OscillatorType = RCC_OSCILLATORTYPE_HSI;
+    RCC_OscInitStruct.HSIState = RCC_HSI_ON;
+    RCC_OscInitStruct.HSICalibrationValue = RCC_HSICALIBRATION_DEFAULT;
+    RCC_OscInitStruct.PLL.PLLState = RCC_PLL_NONE;
+    if (HAL_RCC_OscConfig(&RCC_OscInitStruct) != HAL_OK)
+    {
+        Error_Handler();
+    }
 
-	/** Initializes the CPU, AHB and APB buses clocks
-	*/
-	RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-		| RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
-	RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
-	RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
-	RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
-	RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
+    /** Initializes the CPU, AHB and APB buses clocks
+     */
+    RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
+            | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+    RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
+    RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
+    RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
+    RCC_ClkInitStruct.APB2CLKDivider = RCC_HCLK_DIV1;
 
-	if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
-	{
-		Error_Handler();
-	}
+    if (HAL_RCC_ClockConfig(&RCC_ClkInitStruct, FLASH_LATENCY_0) != HAL_OK)
+    {
+        Error_Handler();
+    }
 }
 
 /* USER CODE BEGIN 4 */
@@ -145,13 +163,13 @@ void SystemClock_Config(void)
  */
 void Error_Handler(void)
 {
-	/* USER CODE BEGIN Error_Handler_Debug */
-	/* User can add his own implementation to report the HAL error return state */
-	__disable_irq();
-	while (1)
-	{
-	}
-	/* USER CODE END Error_Handler_Debug */
+    /* USER CODE BEGIN Error_Handler_Debug */
+    /* User can add his own implementation to report the HAL error return state */
+    __disable_irq();
+    while (1)
+    {
+    }
+    /* USER CODE END Error_Handler_Debug */
 }
 
 #ifdef  USE_FULL_ASSERT

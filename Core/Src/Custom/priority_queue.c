@@ -48,7 +48,7 @@ static void sift_up(void *array,
                     Compare_function_t cmp)
 {
     size_t parent_index = get_parent_index(elem_index);
-    while (parent_index != 0)
+    while (elem_index != 0)
     {
         void *parent_address = get_element_address(array, elem_size, parent_index);
         void *current_address = get_element_address(array, elem_size, elem_index);
@@ -113,7 +113,7 @@ static void sift_down(void *array, size_t arr_max_size,
 
         if (cmp(current_address, max_child))
         {
-            swap(current_address, child_one_address, elem_size);
+            swap(current_address, max_child, elem_size);
             elem_index = max_index;
         }
     }
@@ -134,7 +134,7 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
     size_t current_index = get_parent_index(elemc - 1);
     while (1)
     {
-        if (current_index == 0)
+        if (current_index == -1u)
             break;
 
         sift_down(arr, asize, esize, current_index, cmp);
@@ -163,7 +163,7 @@ void Custom_PQueue_Pop(void *arr, size_t asize, size_t esize, size_t elemc,
     swap(get_element_address(arr, esize, 0),
             get_element_address(arr, esize, elemc - 1), esize);
     //sift down the first
-    sift_down(arr, asize, esize, 0, cmp);
+    sift_down(arr, elemc - 1, esize, 0, cmp);
 }
 
 
