@@ -34,11 +34,11 @@ void Custom_CirBuff_Insert(void *arr, size_t asize, size_t esize,
     (*count)++;
 }
 
-void Custom_CirBuff_Delete(size_t *head, size_t *count)
+void Custom_CirBuff_Delete(size_t asize, size_t *head, size_t *count)
 {
     if (*count == 0) // nothing left to delete
         return;
 
-    (*head)++;
+    *head = (*head + 1) % asize;
     (*count)--;
 }

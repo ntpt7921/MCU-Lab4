@@ -40,6 +40,6 @@
 
 void Custom_CirBuff_Insert(void *arr, size_t asize, size_t esize, 
         size_t *head, size_t *count, void *elem);
-void Custom_CirBuff_Delete(size_t *head, size_t *count);
+void Custom_CirBuff_Delete(size_t asize, size_t *head, size_t *count);
 
 #endif /* INC_CUSTOM_CIRCULAR_BUFFER_H_ */

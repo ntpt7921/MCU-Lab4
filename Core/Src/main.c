@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Custom/priority_queue.h"
+#include "Custom/circular_buffer.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,26 +41,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-#define QUEUE_MAX_SIZE 10
-uint32_t priority_queue[QUEUE_MAX_SIZE];
-uint8_t elem_count = 0;
+#define CIRCULAR_BUFF_MAX_SIZE 10
+uint32_t circular_buffer[CIRCULAR_BUFF_MAX_SIZE];
+size_t head = 0;
+size_t count = 0;
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
-uint8_t compare_max_queue(void*, void*);
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
-uint8_t compare_max_queue(void *e1, void *e2)
-{
-    if (*(uint32_t*) e1 < *(uint32_t*) e2)
-        return 1;
-    else
-        return 0;
-}
 /* USER CODE END 0 */
 
 /**
@@ -91,17 +84,29 @@ int main(void)
 
     /* Initialize all configured peripherals */
     /* USER CODE BEGIN 2 */
-    for (uint8_t i = 0; i < QUEUE_MAX_SIZE; i++)
-        priority_queue[i] = i;
+    for (uint8_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
+        circular_buffer[i] = 0;
 
-    Custom_PQueue_Create(priority_queue, QUEUE_MAX_SIZE, sizeof(uint32_t), 10,
-            compare_max_queue);
+    for (uint32_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
+        Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
+                sizeof(uint32_t), &head, &count, &i);
 
-    for (uint8_t i = 0; i < QUEUE_MAX_SIZE; i++)
-    {
-        Custom_PQueue_Pop(priority_queue, QUEUE_MAX_SIZE, sizeof(uint32_t),
-        QUEUE_MAX_SIZE - i, compare_max_queue);
-    }
+    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
+            sizeof(uint32_t), &head, &count, &count);
+    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
+            sizeof(uint32_t), &head, &count, &count);
+
+    for (uint32_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
+        Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
+
+    Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
+    Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
+
+    uint32_t test = 99;
+    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
+            sizeof(uint32_t), &head, &count, &test);
+    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
+            sizeof(uint32_t), &head, &count, &test);
     /* USER CODE END 2 */
 
     /* Infinite loop */
