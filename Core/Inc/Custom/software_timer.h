@@ -15,17 +15,17 @@
 typedef enum
 {
 	TIMER_FLAG_RESET = RESET, TIMER_FLAG_SET = SET,
-} Timer_flag_state_t;
+} SoftTimer_FlagState_t;
 
 
 typedef struct
 {
 	uint32_t timer_counter;
-	Timer_flag_state_t timer_flag;
-} Software_timer_t;
+	SoftTimer_FlagState_t timer_flag;
+} SoftTimer_t;
 
-void software_timer_set_duration_ms(volatile Software_timer_t *tm, uint32_t ms);
-void software_timer_update_after_tick(volatile Software_timer_t *tm);
-uint8_t software_timer_is_set(volatile Software_timer_t *tm);
+void Custom_SoftTimer_SetDurationTick(volatile SoftTimer_t *tm, uint32_t ms);
+void Custom_SoftTimer_TickUpdate(volatile SoftTimer_t *tm);
+uint8_t Custom_SoftTimer_IsSet(volatile SoftTimer_t *tm);
 
 #endif /* INC_SOFTWARE_TIMER_H_ */
