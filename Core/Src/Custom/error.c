@@ -9,7 +9,7 @@
 
 uint32_t err_bit = 0;
 
-const char * const ERR_DESCRIPTION[ERR_COUNT] = 
+const char * const ERR_DESCRIPTION[ERR_COUNT] =
 {
     // add description of the error here
     // each description must corresponds to the correct error
