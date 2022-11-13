@@ -24,19 +24,19 @@ typedef uint8_t (*Compare_function_t)(void*, void*);
  * It is assumed that the array containing the heap already exists, and 
  * we can access the top element of the heap at array[0]
  *
- * The operation defined for the heap are:
+ * The operations defined for the heap are:
  * - heap_create: make heap from random array
  * - heap_insert: insert a element into the heap
  * - heap_pop: remove the top element of the heap
  *
  * This module is written with reuse in mind, so it is necessarily general
  * and unoptimized. Each function takes a slew of argument:
- * - the pointer to array containing the heap
- * - the array max size (in element count)
- * - the element size
- * - the current element count within array
- * - the compare function
- * - pointer to the element to add (heap_create)
+ * - pointer to array containing the heap
+ * - array max size (in element count)
+ * - element size (in bytes)
+ * - current element count within array
+ * - compare function
+ * - pointer to the element to add (insert into head)
  */
 
 void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,

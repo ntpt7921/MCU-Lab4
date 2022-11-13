@@ -15,7 +15,7 @@
  * NOTE:
  * When a task has been determined to reach its timeout and are decided to be run
  * (with respect to its priority), the task can be put into a pending queue (normal
- * queue). At this point it is not necessarry to store everything about the task
+ * queue). At this point it is not necessary to store everything about the task
  * any more.
  *
  * A new struct is created to represent a pending task waiting to be run in the
