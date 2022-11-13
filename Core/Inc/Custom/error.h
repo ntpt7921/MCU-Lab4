@@ -23,14 +23,19 @@
  * - set status: change the associated bit in err_bit
  * - clean status: reset error bit associated with the provided error
  * - notify: try to notify the error through custom, user defined way
+ * - check status: check if the provided error code is set
  */
 
 typedef enum
 {
-    ERR_EXAMPLE = 0,
+    ERR_CIRBUFF_EMPTYDELETE = 0,
+    ERR_CIRBUFF_FULLINSERT,
 
-    ERR_COUNT, // the maximum value that this should have is 32
+    ERR_PQUEUE_INVALIDCOUNT,
+    ERR_PQUEUE_EMPTYPOP,
+    ERR_PQUEUE_FULLINSERT,
 
+    ERR_COUNT = 32, // the maximum value that this should have is 32
     ERR_ALL, // used to refer to all error bit
 } ErrCode_t;
 
@@ -39,6 +44,7 @@ extern uint32_t err_bit;
 
 void Custom_Err_SetStatus(ErrCode_t err);
 void Custom_Err_ClearStatus(ErrCode_t err);
+uint8_t Custom_Err_CheckStatus(ErrCode_t err);
 void Custom_Err_Notify();
 
 #endif /* INC_CUSTOM_ERROR_H_ */

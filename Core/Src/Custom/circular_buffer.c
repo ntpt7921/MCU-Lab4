@@ -6,6 +6,7 @@
  */
 
 #include "Custom/circular_buffer.h"
+#include "Custom/error.h"
 #include <string.h>
 
 static inline
@@ -25,7 +26,10 @@ void Custom_CirBuff_Insert(void *arr, size_t asize, size_t esize,
         size_t *head, size_t *count, void *elem)
 {
     if (*count == asize) // full
+    {
+        Custom_Err_SetStatus(ERR_CIRBUFF_FULLINSERT);
         return;
+    }
 
     size_t insert_index = get_last_index(asize, *head, *count);
     void * insert_address = get_element_address(arr, esize, insert_index);
@@ -37,7 +41,10 @@ void Custom_CirBuff_Insert(void *arr, size_t asize, size_t esize,
 void Custom_CirBuff_Delete(size_t asize, size_t *head, size_t *count)
 {
     if (*count == 0) // nothing left to delete
+    {
+        Custom_Err_SetStatus(ERR_CIRBUFF_EMPTYDELETE);
         return;
+    }
 
     *head = (*head + 1) % asize;
     (*count)--;

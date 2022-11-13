@@ -13,30 +13,38 @@ const char * const ERR_DESCRIPTION[ERR_COUNT] =
 {
     // add description of the error here
     // each description must corresponds to the correct error
-    [ERR_EXAMPLE] = "Example error description",
+    [ERR_CIRBUFF_EMPTYDELETE] = "Deleting within a empty buffer",
+    [ERR_CIRBUFF_FULLINSERT] = "Inserting into a full buffer",
+    [ERR_PQUEUE_INVALIDCOUNT] = "Invalid element count for priority queue provided",
+    [ERR_PQUEUE_EMPTYPOP] = "Popping empty priority queue",
+    [ERR_PQUEUE_FULLINSERT] = "Inserting into full priority queue",
 };
 
+static inline
+uint32_t get_error_bit_mask(ErrCode_t err)
+{
+    if (err != ERR_ALL)
+        return 1u < err;
+    else
+        return 0xFFFFFFFF;
+}
 
 void Custom_Err_SetStatus(ErrCode_t err)
 {
-    uint32_t error_bit_mask;
-    if (err != ERR_ALL)
-        error_bit_mask = 1u < err;
-    else
-        error_bit_mask = 0xFFFFFFFF;
-
+    uint32_t error_bit_mask = get_error_bit_mask(err);
     err_bit |= error_bit_mask;
 }
 
 void Custom_Err_ClearStatus(ErrCode_t err)
 {
-    uint32_t error_bit_mask;
-    if (err != ERR_ALL)
-        error_bit_mask = 1u < err;
-    else
-        error_bit_mask = 0xFFFFFFFF;
-
+    uint32_t error_bit_mask = get_error_bit_mask(err);
     err_bit &= ~error_bit_mask;
+}
+
+uint8_t Custom_Err_CheckStatus(ErrCode_t err)
+{
+    uint32_t error_bit_mask = get_error_bit_mask(err);
+    return (err_bit & ~error_bit_mask) != 0;
 }
 
 // user can redefine this if needed

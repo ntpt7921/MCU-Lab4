@@ -6,6 +6,7 @@
  */
 
 #include "Custom/priority_queue.h"
+#include "Custom/error.h"
 #include <string.h>
 
 // create a temp mem (used for swapping)
@@ -123,7 +124,10 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
         Compare_function_t cmp)
 {
     if (elemc > asize)
+    {
+        Custom_Err_SetStatus(ERR_PQUEUE_INVALIDCOUNT);
         return;
+    }
 
     // we use the Floyd method for building a binary heap
     // starting from the next to bottom layer, slowly go up, 
@@ -146,8 +150,16 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
 void Custom_PQueue_Insert(void *arr, size_t asize, size_t esize, size_t elemc, void *elem,
         Compare_function_t cmp)
 {
-    if (elemc >= asize)
+    if (elemc > asize)
+    {
+        Custom_Err_SetStatus(ERR_PQUEUE_INVALIDCOUNT);
         return;
+    }
+    else if (elemc == asize)
+    {
+        Custom_Err_SetStatus(ERR_PQUEUE_FULLINSERT);
+        return;
+    }
 
     // copy the element to the next index within the array (elemc)
     memcpy(get_element_address(arr, esize, elemc), elem, esize);
@@ -159,6 +171,12 @@ void Custom_PQueue_Insert(void *arr, size_t asize, size_t esize, size_t elemc, v
 void Custom_PQueue_Pop(void *arr, size_t asize, size_t esize, size_t elemc,
         Compare_function_t cmp)
 {
+    if (elemc == 0)
+    {
+        Custom_Err_SetStatus(ERR_PQUEUE_EMPTYPOP);
+        return;
+    }
+
     // swap the last element (index elemc - 1) with the first (index 0)
     swap(get_element_address(arr, esize, 0),
             get_element_address(arr, esize, elemc - 1), esize);
