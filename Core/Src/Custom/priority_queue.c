@@ -130,10 +130,10 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
     }
 
     // we use the Floyd method for building a binary heap
-    // starting from the next to bottom layer, slowly go up, 
+    // starting from the next to bottom layer, slowly go up,
     // and sift down every element
     // https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap
-    
+
     // get last elem of the next to bottom layer
     size_t current_index = get_parent_index(elemc - 1);
     while (1)
@@ -184,4 +184,28 @@ void Custom_PQueue_Pop(void *arr, size_t asize, size_t esize, size_t elemc,
     sift_down(arr, elemc - 1, esize, 0, cmp);
 }
 
+void Custom_PQueue_Delete(void *arr, size_t asize, size_t esize, size_t elemc, size_t index,
+        Compare_function_t cmp)
+{
+    if (elemc == 0)
+    {
+        Custom_Err_SetStatus(ERR_PQUEUE_EMPTYPOP);
+        return;
+    }
+
+    // swap the last element (index elemc - 1) with the specified element (index)
+    swap(get_element_address(arr, esize, index),
+            get_element_address(arr, esize, elemc - 1), esize);
+
+    // test sift up the element
+    sift_up(arr, esize, index, cmp);
+    // test sift down the element
+    sift_down(arr, elemc - 1, esize, index, cmp);
+}
+
+void Custom_PQueue_PushDown(void *arr, size_t esize, size_t elemc,
+        Compare_function_t cmp)
+{
+    sift_down(arr, elemc, esize, 0, cmp);
+}
 
