@@ -21,7 +21,7 @@
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
-#include "Custom/circular_buffer.h"
+#include "Custom/priority_queue.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -41,15 +41,19 @@
 /* Private variables ---------------------------------------------------------*/
 
 /* USER CODE BEGIN PV */
-#define CIRCULAR_BUFF_MAX_SIZE 10
-uint32_t circular_buffer[CIRCULAR_BUFF_MAX_SIZE];
-size_t head = 0;
-size_t count = 0;
+#define PQUEUE_SIZE 7
+uint32_t pqueue[PQUEUE_SIZE];
+uint32_t count;
+uint8_t uint32_cmp(void *e1, void *e2);
 /* USER CODE END PV */
 
 /* Private function prototypes -----------------------------------------------*/
 void SystemClock_Config(void);
 /* USER CODE BEGIN PFP */
+uint8_t uint32_cmp(void *e1, void *e2)
+{
+    return *(uint32_t*) e1 < *(uint32_t*) e2;
+}
 /* USER CODE END PFP */
 
 /* Private user code ---------------------------------------------------------*/
@@ -84,29 +88,19 @@ int main(void)
 
     /* Initialize all configured peripherals */
     /* USER CODE BEGIN 2 */
-    for (uint8_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
-        circular_buffer[i] = 0;
+    for (uint32_t i = 0; i < PQUEUE_SIZE; i++)
+        pqueue[i] = i;
+    count = PQUEUE_SIZE;
 
-    for (uint32_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
-        Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
-                sizeof(uint32_t), &head, &count, &i);
+    Custom_PQueue_Create(pqueue, PQUEUE_SIZE, sizeof(uint32_t), count, uint32_cmp);
 
-    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
-            sizeof(uint32_t), &head, &count, &count);
-    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
-            sizeof(uint32_t), &head, &count, &count);
+    pqueue[0] = 1;
+    Custom_PQueue_PushDown(pqueue, sizeof(uint32_t), count, uint32_cmp);
 
-    for (uint32_t i = 0; i < CIRCULAR_BUFF_MAX_SIZE; i++)
-        Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
-
-    Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
-    Custom_CirBuff_Delete(CIRCULAR_BUFF_MAX_SIZE, &head, &count);
-
-    uint32_t test = 99;
-    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
-            sizeof(uint32_t), &head, &count, &test);
-    Custom_CirBuff_Insert(circular_buffer, CIRCULAR_BUFF_MAX_SIZE,
-            sizeof(uint32_t), &head, &count, &test);
+    Custom_PQueue_Delete(pqueue, PQUEUE_SIZE, sizeof(uint32_t), count, 2, uint32_cmp);
+    count--;
+    Custom_PQueue_Delete(pqueue, PQUEUE_SIZE, sizeof(uint32_t), count, 2, uint32_cmp);
+    count--;
     /* USER CODE END 2 */
 
     /* Infinite loop */
@@ -144,9 +138,9 @@ void SystemClock_Config(void)
     }
 
     /** Initializes the CPU, AHB and APB buses clocks
-     */
+    */
     RCC_ClkInitStruct.ClockType = RCC_CLOCKTYPE_HCLK | RCC_CLOCKTYPE_SYSCLK
-            | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
+        | RCC_CLOCKTYPE_PCLK1 | RCC_CLOCKTYPE_PCLK2;
     RCC_ClkInitStruct.SYSCLKSource = RCC_SYSCLKSOURCE_HSI;
     RCC_ClkInitStruct.AHBCLKDivider = RCC_SYSCLK_DIV1;
     RCC_ClkInitStruct.APB1CLKDivider = RCC_HCLK_DIV1;
@@ -187,9 +181,9 @@ void Error_Handler(void)
  */
 void assert_failed(uint8_t *file, uint32_t line)
 {
-	/* USER CODE BEGIN 6 */
-	/* User can add his own implementation to report the file name and line number,
+    /* USER CODE BEGIN 6 */
+    /* User can add his own implementation to report the file name and line number,
 ex: printf("Wrong parameters value: file %s on line %d\r\n", file, line) */
-	/* USER CODE END 6 */
+    /* USER CODE END 6 */
 }
 #endif /* USE_FULL_ASSERT */
