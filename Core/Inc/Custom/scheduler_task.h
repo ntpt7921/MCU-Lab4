@@ -30,7 +30,7 @@ typedef struct
     SchedTask_Func_t pTask;  // function pointer
     void *pTaskArg;          // argument for task
     uint8_t priority;        // priority for task
-    uint32_t runAtTick;      // scheduled to be run at tick 
+    uint32_t runAtTick;      // scheduled to be run at tick
     uint32_t periodTick;     // period for auto-reload task, 0 if not auto-reload
     uint8_t taskID;          // used to identify task
 } SchedTask_t;
