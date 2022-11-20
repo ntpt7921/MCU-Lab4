@@ -135,6 +135,10 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
     // https://en.wikipedia.org/wiki/Binary_heap#Building_a_heap
 
     // get last elem of the next to bottom layer
+    if (elemc == 0)
+    {
+        return;
+    }
     size_t current_index = get_parent_index(elemc - 1);
     while (1)
     {
