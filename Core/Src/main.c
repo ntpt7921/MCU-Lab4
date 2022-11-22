@@ -23,6 +23,8 @@
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
 #include "Custom/scheduler.h"
+#include "stm32f103x6.h"
+#include "stm32f1xx_hal_gpio.h"
 /* USER CODE END Includes */
 
 /* Private typedef -----------------------------------------------------------*/
@@ -32,11 +34,15 @@
 
 /* Private define ------------------------------------------------------------*/
 /* USER CODE BEGIN PD */
+typedef struct
+{
+    GPIO_TypeDef *port;
+    uint16_t pinNum;
+} Pin_t;
 /* USER CODE END PD */
 
 /* Private macro -------------------------------------------------------------*/
 /* USER CODE BEGIN PM */
-
 /* USER CODE END PM */
 
 /* Private variables ---------------------------------------------------------*/
@@ -52,6 +58,11 @@ void SystemClock_Config(void);
 
 /* Private user code ---------------------------------------------------------*/
 /* USER CODE BEGIN 0 */
+void task_blink_LED(void *param)
+{
+    Pin_t *pin = (Pin_t*) param;
+    HAL_GPIO_TogglePin(pin->port, pin->pinNum);
+}
 /* USER CODE END 0 */
 
 /**
@@ -83,6 +94,23 @@ int main(void)
     /* Initialize all configured peripherals */
     MX_GPIO_Init();
     /* USER CODE BEGIN 2 */
+    Pin_t led0 = { LED0_GPIO_Port, LED0_Pin };
+    Pin_t led1 = { LED1_GPIO_Port, LED1_Pin };
+    Pin_t led2 = { LED2_GPIO_Port, LED2_Pin };
+    Pin_t led3 = { LED3_GPIO_Port, LED3_Pin };
+    Pin_t led4 = { LED4_GPIO_Port, LED4_Pin };
+
+    Custom_Scheduler_Add(task_blink_LED, (void*) &led0, 0,
+            CUSTOM_SCHEDULER_MS_TO_TICK(500), 0, 0);
+    Custom_Scheduler_Add(task_blink_LED, (void*) &led1, 0,
+            CUSTOM_SCHEDULER_MS_TO_TICK(1000), 1, 1);
+    Custom_Scheduler_Add(task_blink_LED, (void*) &led2, 0,
+            CUSTOM_SCHEDULER_MS_TO_TICK(1500), 2, 2);
+    Custom_Scheduler_Add(task_blink_LED, (void*) &led3, 0,
+            CUSTOM_SCHEDULER_MS_TO_TICK(2000), 3, 3);
+    Custom_Scheduler_Add(task_blink_LED, (void*) &led4, 0,
+            CUSTOM_SCHEDULER_MS_TO_TICK(2500), 4, 4);
+
     Custom_Scheduler_Init();
     /* USER CODE END 2 */
 
@@ -90,8 +118,8 @@ int main(void)
     /* USER CODE BEGIN WHILE */
     while (1)
     {
-        /* USER CODE END WHILE */
         Custom_Scheduler_Dispatch();
+        /* USER CODE END WHILE */
         /* USER CODE BEGIN 3 */
     }
     /* USER CODE END 3 */
