@@ -117,6 +117,10 @@ static void sift_down(void *array, size_t arr_max_size,
             swap(current_address, max_child, elem_size);
             elem_index = max_index;
         }
+        else
+        {
+            break;
+        }
     }
 }
 
@@ -145,7 +149,7 @@ void Custom_PQueue_Create(void *arr, size_t asize, size_t esize, size_t elemc,
         if (current_index == -1u)
             break;
 
-        sift_down(arr, asize, esize, current_index, cmp);
+        sift_down(arr, elemc, esize, current_index, cmp);
 
         current_index--;
     }

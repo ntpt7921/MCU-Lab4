@@ -39,7 +39,7 @@ static uint32_t volatile system_tick_count = 0;
 // static array contaning the priorirty queue
 static SchedTask_t bin_heap[CUSTOM_SCHEDULER_BIHEAP_SIZE];
 // counter for the number of task within heap
-static uint8_t task_count = 0;
+static size_t task_count = 0;
 // if the scheduler is running or not
 static uint8_t scheduler_is_running = 0;
 // if a task is currently running
@@ -150,12 +150,14 @@ void Custom_Scheduler_Add(SchedTask_Func_t pTask, void *pArg,
             .pTaskArg = pArg,
             .priority = priority,
             .periodTick = period,
-            .runAtTick = system_tick_count + delay,
+            .runAtTick = system_tick_count,
             .taskID = ID,
         };
 
         Custom_PQueue_Insert(bin_heap, CUSTOM_SCHEDULER_BIHEAP_SIZE, sizeof(SchedTask_t), task_count,
                 &new_task, Custom_SchedTask_Compare_Smaller);
+
+        increment_timestamp(&new_task.runAtTick, delay);
     }
     else
     {
@@ -166,7 +168,7 @@ void Custom_Scheduler_Add(SchedTask_Func_t pTask, void *pArg,
         current->pTaskArg = pArg;
         current->priority = priority;
         current->periodTick = period;
-        current->runAtTick = system_tick_count + delay;
+        current->runAtTick = delay;
         current->taskID = ID;
     }
     task_count++;
