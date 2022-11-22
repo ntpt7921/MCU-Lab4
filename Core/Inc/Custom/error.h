@@ -35,6 +35,9 @@ typedef enum
     ERR_PQUEUE_EMPTYPOP,
     ERR_PQUEUE_FULLINSERT,
 
+    ERR_SCHEDULER_FULLADD,
+    ERR_SCHEDULER_EMPTYDELETE,
+
     ERR_COUNT = 32, // the maximum value that this should have is 32
     ERR_ALL, // used to refer to all error bit
 } ErrCode_t;

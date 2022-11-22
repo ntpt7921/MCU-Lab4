@@ -18,6 +18,8 @@ const char * const ERR_DESCRIPTION[ERR_COUNT] =
     [ERR_PQUEUE_INVALIDCOUNT] = "Invalid element count for priority queue provided",
     [ERR_PQUEUE_EMPTYPOP] = "Popping empty priority queue",
     [ERR_PQUEUE_FULLINSERT] = "Inserting into full priority queue",
+    [ERR_SCHEDULER_EMPTYDELETE] = "Delete task when the task list is empty",
+    [ERR_SCHEDULER_FULLADD] = "Add task when the task list is full",
 };
 
 static inline

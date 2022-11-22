@@ -8,7 +8,11 @@
 #include "Custom/scheduler.h"
 #include "Custom/priority_queue.h"
 #include "Custom/scheduler_task.h"
+
+#ifdef CUSTOM_SCHEDULER_USE_WATCHDOG
 #include "iwdg.h"
+#endif
+
 #include "stdint.h"
 #include "stm32f1xx_hal_iwdg.h"
 #include "stm32f1xx_hal_pwr.h"
@@ -103,6 +107,7 @@ void Custom_Scheduler_Init(void)
 #ifdef CUSTOM_SCHEDULER_USE_WATCHDOG
     MX_IWDG_Init(); // defined by CubeMx in iwdg.c
 #endif
+
     MX_TIM3_Init(); // defined by CubeMx in tim.c
     HAL_TIM_Base_Start_IT(&htim3);
 }
@@ -132,6 +137,7 @@ void Custom_Scheduler_Add(SchedTask_Func_t pTask, void *pArg,
 {
     if (task_count == CUSTOM_SCHEDULER_BIHEAP_SIZE)
     {
+        Custom_Err_SetStatus(ERR_SCHEDULER_FULLADD);
         return;
     }
 
@@ -170,6 +176,7 @@ void Custom_Scheduler_Delete(uint8_t ID)
 {
     if (task_count == 0)
     {
+        Custom_Err_SetStatus(ERR_SCHEDULER_EMPTYDELETE);
         return;
     }
 
@@ -195,11 +202,11 @@ void Custom_Scheduler_Dispatch()
         return;
     }
 
-    SchedTask_t *top = &bin_heap[0];
     // search the top of binary heap
     // if found task that is overdue, run it and update task record
     defer_tick_update = 1; // start of critical section
-    if (top->runAtTick < system_tick_count)
+    SchedTask_t *top = &bin_heap[0];
+    while (task_count > 0 && top->runAtTick < system_tick_count)
     {
 #ifdef CUSTOM_SCHEDULER_USE_WATCHDOG
         HAL_IWDG_Refresh(&hiwdg);
@@ -219,10 +226,13 @@ void Custom_Scheduler_Dispatch()
                     task_count, Custom_SchedTask_Compare_Smaller);
             task_count--;
         }
-        // if not reload the task and push it down the heap
-        increment_timestamp(&top->runAtTick, top->periodTick);
-        Custom_PQueue_PushDown(bin_heap, sizeof(SchedTask_t),
-                task_count, Custom_SchedTask_Compare_Smaller);
+        else
+        {
+            // if not reload the task and push it down the heap
+            increment_timestamp(&top->runAtTick, top->periodTick);
+            Custom_PQueue_PushDown(bin_heap, sizeof(SchedTask_t),
+                    task_count, Custom_SchedTask_Compare_Smaller);
+        }
     }
     defer_tick_update = 0;
     if (defer_tick_update_count > 0)
